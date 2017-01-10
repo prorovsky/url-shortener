@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>URL Shortener</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <h1>URL Shortener Microservice API</h1>
+    
+    <p>User stories:</p>
+    <ul>
+        <li>I can pass a URL as a parameter and I will receive a shortened URL in the JSON response.</li>
+        <li>If I pass an invalid URL that doesn't follow the valid http://www.example.com format, the JSON response will contain an error instead.</li>
+        <li>When I visit that shortened URL, it will redirect me to my original link.</li>
+    </ul>
+
+    <p>Example usage:</p>
+        <code>https://site.herokuapp.com/new/https://www.google.com</code>
+    <p>Example output:</p>
+        <code>{ "originalUrl":"https://google.com", "shortUrl":"https://site.herokuapp.com/8dyn" }</code>
+
+</body>
+</html>
