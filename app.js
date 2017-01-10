@@ -1,7 +1,7 @@
 var express = require('express'),
     app = express(),
     mongoose = require('mongoose'),
-    siteUrl = 'localhost:3000/',
+    siteUrl = process.env.SITEURL || 'localhost:3000/',
     charsStr = '1234567890qwertyuiopasdfghjklzxcvbnm'; 
 
 // db
