@@ -1,46 +1,90 @@
 var express = require('express'),
     app = express(),
-    siteUrl = 'https://prorovsky/',
+    mongoose = require('mongoose'),
+    siteUrl = 'localhost:3000/',
     charsStr = '1234567890qwertyuiopasdfghjklzxcvbnm'; 
 
-var urlLink = {
-    originalUrl: "http://gmail.com",
-    shortUrl: ""
-};
+// model
+mongoose.connect("mongodb://localhost/test-url");
 
-var urls = [];
+var linkSchema = new mongoose.Schema({
+    originalUrl: String,
+    shortUrl: String
+});
+
+var Link = mongoose.model('Link', linkSchema);
+
+// file server
 
 app.use(express.static('public'));
+
+// routes
 
 app.get('/new/', function(req, res){
     res.send('info');
 });
 
 app.get('/new/:site*', function(req, res){ 
-    newSite = {
-        originalUrl: "",
-        shortUrl: ""
-    };
-    
-    newSite.originalUrl = req.url.substr(5);
-    newSite.shortUrl = siteUrl + randomStr(4, charsStr); 
-
-    // urls.push(newSite);
-    // res.json(urls);
-
-    // if(validation(newSite.originalUrl)){ // validation
-    //     res.send('true');
-    // } else {
-    //     res.send('false');
-    // }
-
-    // redirect = 'https://gmail.com';
-    // res.redirect(redirect); // редирект на другой сайт
+    var newSite = getNewSite(req);
+    handleNewSite(newSite, res);
 });
+
+app.get('/:redirect', function(req, res){
+
+    var para = req.params.redirect;
+    console.log(para)
+    Link.findOne({'shortUrl': req.params.redirect}, function(err, link){
+        if(err){
+            console.error(err);
+        } else {
+            res.redirect(link.originalUrl);
+        }
+    });
+    // res.send('redirect');
+
+}); 
 
 app.listen(process.env.PORT || 3000, function(){
     console.log('Server started...');
 });
+
+// helpers
+
+function getNewSite(req){
+    var newSite = {
+            originalUrl: '',
+            shortUrl: ''
+    };
+    newSite.originalUrl = req.url.substr(5);
+    newSite.shortUrl = siteUrl + randomStr(4, charsStr);
+    return newSite; 
+}
+
+function handleNewSite(site, res){
+    if(validation(site.originalUrl)){
+        Link.findOne({'originalUrl': site.originalUrl}, function(err, link){
+            if(err){
+                console.error(err);
+            } else {
+                if(link === null){
+                    Link.create(site, function(err, link){
+                        if(err){
+                            console.error(err);
+                        } else {
+                            console.log('create url');
+                            res.json(link);
+                        }
+                    });
+                } else {
+                    console.log('find url');
+                    res.json(link);
+                }
+            }
+        });
+    } else {
+        res.send('Sorry, this is not valid url');
+    }
+}
 
 function randomStr(length, chars){
     var result = '';
