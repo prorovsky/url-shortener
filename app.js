@@ -55,7 +55,7 @@ function getNewSite(req){
 
 function handleNewSite(site, res){
     if(validation(site.originalUrl)){
-        Link.findOne({'originalUrl': site.originalUrl}, function(err, link){
+        Link.findOne({'originalUrl': site.originalUrl}, '-_id -__v', function(err, link){
             if(err){
                 console.error(err);
             } else {
@@ -64,11 +64,11 @@ function handleNewSite(site, res){
                         if(err){
                             console.error(err);
                         } else {
-                            res.json(displayObject(link));
+                            res.json(link);
                         }
                     });
                 } else {
-                    res.json(displayObject(link));
+                    res.json(link);
                 }
             }
         });
@@ -83,13 +83,6 @@ function randomStr(length, chars){
         result += chars[Math.floor(Math.random() * chars.length)];
     }
     return result;
-}
-
-function displayObject(link){
-    var linkView = {};
-    linkView.originalUrl = link.originalUrl;
-    linkView.shortUrl = link.shortUrl;
-    return linkView; 
 }
 
 function redirectUrl(req, res){
